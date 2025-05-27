@@ -6,7 +6,8 @@
       "extensions": [
         "ms-dotnettools.csharp",
         "ms-dotnettools.csdevkit",
-        "mechatroner.rainbow-csv"
+        "mechatroner.rainbow-csv",
+        "ritwickdey.LiveServer"
       ]
     }
   },

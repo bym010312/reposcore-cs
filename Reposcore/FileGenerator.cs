@@ -53,8 +53,10 @@ public class FileGenerator
         string filePath = Path.Combine(_folderPath, $"{_repoName}.csv");
         using StreamWriter writer = new StreamWriter(filePath);
 
-        
-        // 파일에 "# 점수 계산 기준…" 을 쓰면, 이 줄이 CSV 첫 줄로 나옵니다.
+
+        string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+        // 파일에 "# ..." 로 주석을 작성하면 CSV 주석으로 활용된다.
+        writer.WriteLine($"# Generated: {timestamp}");
         writer.WriteLine("# 점수 계산 기준: PR_fb*3, PR_doc*2, PR_typo*1, IS_fb*2, IS_doc*1");
         // CSV 헤더
         writer.WriteLine("User,f/b_PR,doc_PR,typo,f/b_issue,doc_issue,PR_rate,IS_rate,total");
@@ -75,6 +77,8 @@ public class FileGenerator
     {
         // 출력할 파일 경로
         string filePath = Path.Combine(_folderPath, $"{_repoName}1.txt");
+
+        string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
 
         // 테이블 생성
         var headers = "UserId,f/b_PR,doc_PR,typo,f/b_issue,doc_issue,PR_rate,IS_rate,total".Split(',');
@@ -104,7 +108,9 @@ public class FileGenerator
         
         // 점수 기준 주석과 테이블 같이 출력
         var tableText = table.ToMinimalString();
-        var content = "# 점수 계산 기준: PR_fb*3, PR_doc*2, PR_typo*1, IS_fb*2, IS_doc*1"
+        var content = $"# Generated: {timestamp}"
+                    + Environment.NewLine
+                    + "# 점수 계산 기준: PR_fb*3, PR_doc*2, PR_typo*1, IS_fb*2, IS_doc*1"
                     + Environment.NewLine
                     + tableText;
         File.WriteAllText(filePath, content);
@@ -181,7 +187,11 @@ public class FileGenerator
         var barPlot = plt.Add.Bars(bars);
 
         plt.Axes.Left.TickGenerator = new NumericManual(positions, names);
-        plt.Title($"Scores - {_repoName}");
+        double avgScore = _scores.Count > 0 ? _scores.Average(x => (double)x.Value.total) : 0.0;
+        double maxScore = _scores.Count > 0 ? _scores.Max(x => x.Value.total) : 0.0;
+        double minScore = _scores.Count > 0 ? _scores.Min(x => x.Value.total) : 0.0;
+        string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+        plt.Title($"Repo: {_repoName} Date: {timestamp} Avg: {avgScore:F1} Max: {maxScore} Min: {minScore}");
         plt.XLabel("Total Score");
         plt.YLabel("User");
 
